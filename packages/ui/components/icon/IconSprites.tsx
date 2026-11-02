@@ -7,7 +7,9 @@ const commitHash = vercelCommitHash ? `-${vercelCommitHash.slice(0, 7)}` : "";
 export function IconSprites() {
   return (
     <SVG
-      src={`${process.env.NEXT_PUBLIC_WEBAPP_URL}/icons/sprite.svg?v=${process.env.NEXT_PUBLIC_CALCOM_VERSION}-${commitHash}`}
+      // Relative so the sprite loads from whichever host serves the page (the
+      // public booking host differs from the tailnet-only WEBAPP_URL host).
+      src={`/icons/sprite.svg?v=${process.env.NEXT_PUBLIC_CALCOM_VERSION}-${commitHash}`}
     />
   );
 }
