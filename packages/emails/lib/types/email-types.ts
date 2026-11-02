@@ -20,5 +20,8 @@ export type EmailVerifyCode = {
   };
   verificationEmailCode: string;
   isVerifyingEmail?: boolean;
+  // Code sent from the booking form (event requires booker email verification)
+  isBookingVerification?: boolean;
+  hostName?: string;
   hideLogo?: boolean;
 };

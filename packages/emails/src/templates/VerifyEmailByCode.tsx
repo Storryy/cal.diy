@@ -9,6 +9,29 @@ import { BaseEmailHtml } from "../components";
 export const VerifyEmailByCode = (
   props: EmailVerifyCode & Partial<React.ComponentProps<typeof BaseEmailHtml>>
 ) => {
+  if (props.isBookingVerification) {
+    return (
+      <BaseEmailHtml
+        hideLogo={props.hideLogo}
+        subject={props.language("booker_verify_email_subject", { hostName: props.hostName })}>
+        <p style={{ fontWeight: 600, fontSize: "32px", lineHeight: "38px" }}>
+          <>{props.language("booker_verify_email_header")}</>
+        </p>
+        <p style={{ fontWeight: 400 }}>
+          <>{props.language("hi_user_name", { name: props.user.name })},</>
+        </p>
+        <p style={{ fontWeight: 400, lineHeight: "24px" }}>
+          <>{props.language("booker_verify_email_body", { hostName: props.hostName })}</>
+        </p>
+        <p style={{ fontWeight: 600, fontSize: "28px", letterSpacing: "4px", lineHeight: "36px" }}>
+          {props.verificationEmailCode}
+        </p>
+        <p style={{ fontWeight: 400, lineHeight: "24px", color: "#6B7280" }}>
+          <>{props.language("booker_verify_email_footer")}</>
+        </p>
+      </BaseEmailHtml>
+    );
+  }
   return (
     <BaseEmailHtml
       hideLogo={props.hideLogo}

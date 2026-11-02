@@ -19,24 +19,34 @@ export default class AttendeeVerifyEmail extends BaseEmail {
     return {
       to: `${this.verifyAccountInput.user.name} <${this.verifyAccountInput.user.email}>`,
       from: `${EMAIL_FROM_NAME} <${this.getMailerOptions().from}>`,
-      subject: this.verifyAccountInput.hideLogo
-        ? this.verifyAccountInput.language("verify_email_subject_no_branding")
-        : this.verifyAccountInput.language(
-            `verify_email_subject${this.verifyAccountInput.isVerifyingEmail ? "_verifying_email" : ""}`,
-            { appName: APP_NAME }
-          ),
+      subject: this.getSubject(),
       html: await renderEmail("VerifyEmailByCode", this.verifyAccountInput),
       text: this.getTextBody(),
     };
   }
 
+  private getSubject(): string {
+    const { language, hideLogo, isVerifyingEmail, isBookingVerification, hostName } =
+      this.verifyAccountInput;
+    if (isBookingVerification) return language("booker_verify_email_subject", { hostName });
+    return hideLogo
+      ? language("verify_email_subject_no_branding")
+      : language(`verify_email_subject${isVerifyingEmail ? "_verifying_email" : ""}`, { appName: APP_NAME });
+  }
+
   protected getTextBody(): string {
-    const subject = this.verifyAccountInput.hideLogo
-      ? this.verifyAccountInput.language("verify_email_subject_no_branding")
-      : this.verifyAccountInput.language(
-          `verify_email_subject${this.verifyAccountInput.isVerifyingEmail ? "_verifying_email" : ""}`,
-          { appName: APP_NAME }
-        );
+    const subject = this.getSubject();
+    const { isBookingVerification, hostName } = this.verifyAccountInput;
+    if (isBookingVerification) {
+      const t = this.verifyAccountInput.language;
+      return `
+${t("booker_verify_email_header")}
+${t("hi_user_name", { name: this.verifyAccountInput.user.name })},
+${t("booker_verify_email_body", { hostName })}
+${this.verifyAccountInput.verificationEmailCode}
+${t("booker_verify_email_footer")}
+`.replace(/(<([^>]+)>)/gi, "");
+    }
 
     const footer = this.verifyAccountInput.hideLogo
       ? ""

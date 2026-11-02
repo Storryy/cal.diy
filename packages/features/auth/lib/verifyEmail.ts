@@ -9,7 +9,7 @@ import { FeaturesRepository } from "@calcom/features/flags/features.repository";
 import { sentrySpan } from "@calcom/features/watchlist/lib/telemetry";
 import { checkIfEmailIsBlockedInWatchlistController } from "@calcom/features/watchlist/operations/check-if-email-in-watchlist.controller";
 import { checkRateLimitAndThrowError } from "@calcom/lib/checkRateLimitAndThrowError";
-import { WEBAPP_URL } from "@calcom/lib/constants";
+import { WEBAPP_URL, EMAIL_FROM_NAME } from "@calcom/lib/constants";
 import logger from "@calcom/lib/logger";
 import { getTranslation } from "@calcom/i18n/server";
 import { hashEmail } from "@calcom/lib/server/PiiHasher";
@@ -24,6 +24,7 @@ interface VerifyEmailType {
   language?: string;
   secondaryEmailId?: number;
   isVerifyingEmail?: boolean;
+  isBookingVerification?: boolean;
   isPlatform?: boolean;
   extraParams?: Record<string, string>;
   hideBranding?: boolean;
@@ -94,6 +95,7 @@ export const sendEmailVerificationByCode = async ({
   language,
   username,
   isVerifyingEmail,
+  isBookingVerification,
   hideBranding,
 }: VerifyEmailType) => {
   if (await checkIfEmailIsBlockedInWatchlistController({ email, organizationId: null, span: sentrySpan })) {
@@ -117,6 +119,8 @@ export const sendEmailVerificationByCode = async ({
       name: username,
     },
     isVerifyingEmail,
+    isBookingVerification,
+    hostName: EMAIL_FROM_NAME,
     hideLogo: hideBranding,
   });
 

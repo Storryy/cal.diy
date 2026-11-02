@@ -40,6 +40,7 @@ export const sendVerifyEmailCode = async ({
     username: input.username,
     language: input.language,
     isVerifyingEmail: input.isVerifyingEmail,
+    isBookingVerification: !!input.eventTypeId,
     hideBranding,
   });
 };
