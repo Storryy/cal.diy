@@ -6,7 +6,8 @@
  */
 import { localStorage } from "@calcom/lib/webstorage";
 
-const is24hLocalstorageKey = "timeOption.is24hClock";
+// Homeserver: new key so a 24h value auto-detected under the old key does not stick; only a visitor's own toggle is stored.
+const is24hLocalstorageKey = "timeOption.is24hClock.v2";
 
 export enum TimeFormat {
   TWELVE_HOUR = "h:mma",
@@ -29,9 +30,8 @@ export const getTimeFormatStringFromUserTimeFormat = (timeFormat: number | null 
 };
 
 /**
- * Retrieves the browsers time format preference, checking local storage first
- * for a user set preference. If no preference is found, it will use the browser
- * locale to determine the time format and store it in local storage.
+ * Retrieves the visitor's time format preference from local storage.
+ * If they have not chosen one, the default is 12h.
  */
 export const isBrowserLocale24h = () => {
   const localStorageTimeFormat = getIs24hClockFromLocalStorage();
@@ -41,14 +41,8 @@ export const isBrowserLocale24h = () => {
   } else if (localStorageTimeFormat === false) {
     return false;
   }
-  // Intl.DateTimeFormat with value=undefined uses local browser settings.
-  if (!!new Intl.DateTimeFormat(undefined, { hour: "numeric" }).format(0).match(/M/i)) {
-    setIs24hClockInLocalStorage(false);
-    return false;
-  } else {
-    setIs24hClockInLocalStorage(true);
-    return true;
-  }
+  // Homeserver: default to 12h instead of following the browser locale.
+  return false;
 };
 
 /**
